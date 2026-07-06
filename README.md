@@ -1,4 +1,5 @@
 
+
 ---
 title: AI Healing Video Generator
 emoji: 🌿
@@ -10,6 +11,7 @@ python_version: "3.10"
 app_file: app.py
 pinned: false
 ---
+
 
 # AI 疗愈视频生成器
 
