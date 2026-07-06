@@ -97,17 +97,17 @@ with gr.Blocks(title="🌿 AI 疗愈视频生成器", css="""
     script_output = gr.JSON(label="剧本详情")
     audio_output = gr.Audio(label="旁白音频", type="filepath")
     subtitle_output = gr.File(label="字幕文件 (.srt)")
-    all_videos_output = gr.Textbox(label="所有生成视频文件路径", visible=False)  # 隐藏，但保留信息
+    
 
     # 绑定事件
     async def on_submit(topic):
         main_vid, script_json, audio, sub, all_vids = await run_full_pipeline(topic)
-        return main_vid, script_json, audio, sub, all_vids
+        return main_vid, script_json, audio, sub
 
     submit_btn.click(
         fn=on_submit,
         inputs=topic_input,
-        outputs=[video_output, script_output, audio_output, subtitle_output, all_videos_output],
+        outputs=[video_output, script_output, audio_output, subtitle_output],
         show_progress="full"
     )
 
