@@ -88,4 +88,4 @@ with gr.Blocks(title="🌿 AI 疗愈视频生成器", css="""
 
 if __name__ == "__main__":
     os.makedirs("outputs", exist_ok=True)
-    demo.launch()
+    demo.launch(show_api=False)
