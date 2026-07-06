@@ -4,7 +4,8 @@ langchain-openai
 langchain-classic
 langchain-community
 chromadb
-sentence-transformers
+sentence-transformers>=2.7.0
+huggingface-hub==0.26.2
 edge-tts
 gTTS
 pydantic
