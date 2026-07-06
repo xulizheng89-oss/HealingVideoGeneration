@@ -1,27 +1,21 @@
-
 import os
 import time
 import asyncio
 import gradio as gr
 from dotenv import load_dotenv
 
-# 加载环境变量（本地可用 .env，Hugging Face 用 Secrets）
 load_dotenv()
 
-# 导入你已有的工具函数
 from video_tools import generate_video_script, call_video_generation_api, generate_narration_and_subtitle
 from models import VideoScript
 
-# 可选：合并视频用
 try:
     from moviepy.editor import VideoFileClip, concatenate_videoclips
     MOVIEPY_AVAILABLE = True
 except ImportError:
     MOVIEPY_AVAILABLE = False
 
-
 def merge_videos(video_paths, output_path=None):
-    """合并多个视频为单个文件（需要 moviepy）"""
     if not MOVIEPY_AVAILABLE or len(video_paths) < 2:
         return video_paths[0] if video_paths else None
     clips = [VideoFileClip(p) for p in video_paths]
@@ -34,37 +28,24 @@ def merge_videos(video_paths, output_path=None):
         clip.close()
     return output_path
 
-
 async def run_full_pipeline(topic: str):
-    """
-    完整生成流程：剧本 → 视频 → 旁白/字幕。
-    返回：(主视频路径, 剧本JSON字符串, 音频路径, 字幕路径, 所有视频列表)
-    """
-    # 1. 生成剧本
+    # 生成剧本
     script: VideoScript = generate_video_script(topic)
-
-    # 2. 为每个场景生成视频
     video_paths = []
     for scene in script.scenes:
         vpath = call_video_generation_api(scene.visual_description, scene.duration)
         video_paths.append(vpath)
 
-    # 3. 拼接所有旁白，生成音频和字幕
     full_narration = " ".join([scene.narration for scene in script.scenes])
     audio_info = await generate_narration_and_subtitle(full_narration)
 
-    # 4. 合并视频（如果安装了 moviepy）
     merged = merge_videos(video_paths) if len(video_paths) > 1 else video_paths[0]
     main_video = merged or video_paths[0]
 
-    # 5. 整理输出信息
-    script_json = script.model_dump_json(indent=2, ensure_ascii=False)
-    all_videos_text = "\n".join([f"- {p}" for p in video_paths])
+    # 只返回视频和简单状态文本
+    status_msg = f"生成完成！剧本标题：{script.title}\n音频：{audio_info['audio']}\n字幕：{audio_info['subtitle']}"
+    return main_video, status_msg
 
-    return main_video, script_json, audio_info["audio"], audio_info["subtitle"], all_videos_text
-
-
-# ========== Gradio 界面 ==========
 with gr.Blocks(title="🌿 AI 疗愈视频生成器", css="""
     body { background-color: #f9f7f4; }
     .gradio-container { max-width: 900px; margin: auto; }
@@ -85,34 +66,26 @@ with gr.Blocks(title="🌿 AI 疗愈视频生成器", css="""
         )
         submit_btn = gr.Button("生成疗愈视频", variant="primary", scale=1)
 
-    # 预设示例
     with gr.Row():
         presets = ["森林冥想", "海边呼吸练习", "星空助眠引导", "花园晨间散步"]
         for p in presets:
             btn = gr.Button(p, elem_classes="preset-btn", size="sm")
             btn.click(fn=lambda x=p: x, outputs=topic_input)
 
-    # 输出组件
     video_output = gr.Video(label="生成的疗愈视频", height=400)
-    script_output = gr.JSON(label="剧本详情")
-    audio_output = gr.Audio(label="旁白音频", type="filepath")
-    subtitle_output = gr.File(label="字幕文件 (.srt)")
-    
+    status_output = gr.Textbox(label="状态", lines=3)
 
-    # 绑定事件
     async def on_submit(topic):
-        main_vid, script_json, audio, sub, all_vids = await run_full_pipeline(topic)
-        return main_vid, script_json, audio, sub
+        main_vid, status_msg = await run_full_pipeline(topic)
+        return main_vid, status_msg
 
     submit_btn.click(
         fn=on_submit,
         inputs=topic_input,
-        outputs=[video_output, script_output, audio_output, subtitle_output],
+        outputs=[video_output, status_output],
         show_progress="full"
     )
 
-
 if __name__ == "__main__":
-    # 创建输出目录
     os.makedirs("outputs", exist_ok=True)
     demo.launch()
