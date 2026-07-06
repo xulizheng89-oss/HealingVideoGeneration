@@ -1,0 +1,38 @@
+
+# 环境变量（含密钥）
+.env
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 虚拟环境
+venv/
+.venv/
+env/
+gradio_healingVideo/
+
+# IDE 配置
+.vscode/
+.idea/
+
+# 输出目录（生成的视频、音频、字幕）
+outputs/
+
+# 向量数据库本地存储
+chroma_db/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# 日志
+*.log
+
+# 临时文件
+*.tmp

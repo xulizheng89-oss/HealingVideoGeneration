@@ -1,0 +1,16 @@
+gradio>=4.0
+fastapi
+uvicorn
+python-dotenv
+langchain-openai
+langchain-classic
+langchain-community
+langchain-core
+langchain-text-splitters
+chromadb
+sentence-transformers
+edge-tts
+gTTS
+pydantic
+requests
+moviepy>=1.0.3   
