@@ -4,10 +4,14 @@ langchain-openai
 langchain-classic
 langchain-community
 chromadb
-sentence-transformers>=2.7.0
+sentence-transformers==2.7.0
 huggingface-hub==0.26.2
 edge-tts
 gTTS
 pydantic
 requests
 moviepy
+fastapi
+uvicorn
+jinja2
+python-multipart

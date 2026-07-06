@@ -5,10 +5,10 @@ title: AI Healing Video Generator
 emoji: 🌿
 colorFrom: green
 colorTo: blue
-sdk: gradio
-sdk_version: 4.44.1
+sdk: fastapi
+sdk_version: "0.103.2"
 python_version: "3.10"
-app_file: app.py
+app_file: main.py
 pinned: false
 ---
 
