@@ -11,7 +11,4 @@ gTTS
 pydantic
 requests
 moviepy
-fastapi
-uvicorn
-jinja2
-python-multipart
+gradio
