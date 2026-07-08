@@ -12,3 +12,4 @@ pydantic
 requests
 moviepy
 gradio
+tenacity
