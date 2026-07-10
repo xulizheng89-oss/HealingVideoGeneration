@@ -1,3 +1,92 @@
+def merge_audio_video(video_path: str, audio_path: str, output_path: str) -> str:
+    """
+    使用 ffmpeg 将音频合并到视频中。
+    如果合成失败，返回原始视频路径。
+    """
+    # 1. 检查音频文件是否存在
+    if not audio_path or not os.path.exists(audio_path):
+        print(f"⚠️ 音频文件不存在，跳过合成: {audio_path}")
+        return video_path  # 返回原始视频
+
+    # 2. 检查视频文件是否存在
+    if not os.path.exists(video_path):
+        print(f"❌ 视频文件不存在: {video_path}")
+        return video_path
+
+    # 3. 自动查找 ffmpeg
+    ffmpeg_path = shutil.which("ffmpeg")
+    if not ffmpeg_path:
+        # 如果自动查找失败，使用你的具体路径
+        ffmpeg_path = r"D:\software\ffmpeg\ffmpeg-8.1.2-full_build\ffmpeg-8.1.2-full_build\bin\ffmpeg.exe"
+        if not os.path.exists(ffmpeg_path):
+            print("❌ 找不到 ffmpeg，跳过合成")
+            return video_path
+
+    # 4. 构建合成命令
+    cmd = [
+        ffmpeg_path,
+        "-i", video_path,
+        "-i", audio_path,
+        "-c:v", "copy",
+        "-c:a", "aac",
+        "-shortest",
+        "-y",
+        output_path
+    ]
+
+    # 5. 执行命令
+    try:
+        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+        print(f"✅ 合成成功: {output_path}")
+        return output_path
+    except subprocess.CalledProcessError as e:
+        print(f"❌ ffmpeg 合成失败: {e.stderr}")
+        # 关键：失败时返回原始视频路径，而不是 None
+        return video_path
+
+
+金毛汪汪叫着笑着朝着屏幕跑来
+
+####################################################################################备份：烧录和音频一起之前 备份分开（稳定的）
+ # 字幕烧录前
+    if subtitle_path and os.path.exists(subtitle_path):
+        print("[APP] 字幕文件存在，开始烧录...")
+        try:
+            subbed_video = os.path.join(output_dir, "video_with_subs.mp4")
+            await loop.run_in_executor(None, add_subtitle_to_video, raw_video, subtitle_path, subbed_video)
+            print("[APP] 字幕烧录完成")
+            video_with_subs = subbed_video
+        except Exception as e:
+            print(f"[APP] 字幕烧录失败：{e}，将使用原始视频")
+    else:
+        print("[APP] 无字幕文件，跳过烧录")
+
+    # 音频合并前
+    final_video_path = video_with_subs
+    if audio_path and os.path.exists(audio_path):
+        print("[APP] 音频文件存在，开始合并...")
+        try:
+            gr.Info("字幕已合成，正在合并音频，请耐心等待...")
+            final_merged = os.path.join(output_dir, "final_healing_video.mp4")
+            cmd = [
+                ffmpeg_path,
+                "-i", video_with_subs,
+                "-i", audio_path,
+                "-c:v", "copy",
+                "-c:a", "aac",
+                "-y",
+                final_merged
+            ]
+            subprocess.run(args=cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            final_video_path = final_merged
+            print("[APP] 音频合并完成")
+        except Exception as e:
+            print(f"[APP] 音频合并失败：{e}，返回带字幕的视频")
+    else:
+        print("[APP] 无音频文件，跳过合并")
+
+
+####################################################################################备份： ffmpeg一起处理字幕和旁白后成功 记录
 import os
 os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
 import sys
