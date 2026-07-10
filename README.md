@@ -43,18 +43,18 @@ venv\Scripts\activate
 
 # 激活虚拟环境 (macOS/Linux)
 source venv/bin/activate
-3. 安装依赖
+# 安装依赖
 bash
 pip install -r requirements.txt
-4. 配置环境变量（新建 .env 文件）
+# 配置环境变量（新建 .env 文件）
 在项目根目录下新建一个名为 .env 的文件，填入以下内容（请替换成你自己的 API Key）：
 
 text
 OPENAI_API_KEY=sk-你的腾讯混元API密钥
 BASE_URL=https://tokenhub.tencentmaas.com/v1
 TEXT_MODEL=deepseek-v4-flash-202605
-VIDEO_MODEL=hy-video-1.5
-如何获取 API Key？
+VIDEO_MODEL=hy-video-1.5（注意选择文生视频模型）
+# 如何获取 API Key？
 
 登录 腾讯云混元大模型控制台
 
@@ -62,14 +62,12 @@ VIDEO_MODEL=hy-video-1.5
 
 确保你的账户有足够的额度或余额
 
-5. 运行应用
+# 运行应用
 bash
+$env:HF_ENDPOINT = "https://hf-mirror.com"（采用国内镜像，防止网络不稳定）
 python app.py
 启动后，浏览器访问 http://127.0.0.1:7860 即可体验。
 
-ps：
-.env 文件的格式
-OPENAI_API_KEY=
-BASE_URL=
-TEXT_MODEL=deepseek-v4-flash-202605
-VIDEO_MODEL=hy-video-1.5（注意选择文生视频模型）
+# ps：
+
+
